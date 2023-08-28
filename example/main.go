@@ -2,31 +2,32 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/sony/sonyflake"
-	"github.com/sony/sonyflake/awsutil"
 )
 
 var sf *sonyflake.Sonyflake
 
 func init() {
-	var st sonyflake.Settings
-	st.MachineID = awsutil.AmazonEC2MachineID
-	sf = sonyflake.NewSonyflake(st)
+	sf = sonyflake.NewSonyflake(sonyflake.Settings{})
+
 	if sf == nil {
-		panic("sonyflake not created")
+		log.Fatal("initialization failed")
 	}
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	id, err := sf.NextID()
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	body, err := json.Marshal(sonyflake.Decompose(id))
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,5 +39,5 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 }
