@@ -5,4 +5,4 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 
 . "${SCRIPT_DIR}/config.sh"
 
-docker push "42milez/sonyflake:${TAG}"
+docker push "${REPOSITORY}:${TAG}"
